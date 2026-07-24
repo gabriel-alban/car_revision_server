@@ -4,6 +4,7 @@ import carRouter from './routes/carRoutes.js';
 import mongoose from 'mongoose';
 import {json, urlencoded} from 'body-parser';
 import morgan from 'morgan';
+import path from 'node:path';
 
 const app = express();
 env.config();
@@ -12,9 +13,16 @@ const port = process.env.PORT;
 
 app.use(json());
 app.use(urlencoded({extended: true}));
+app.use(express.static(path.join(__dirname, "../")));
 app.use(morgan('short'));
 
-mongoose.connect("mongodb://localhost:27017/car_revision")
+const mongoUrl = process.env.MONGO_URL;
+
+if (!mongoUrl) {
+    throw new Error("No db provided!");
+}
+
+mongoose.connect(mongoUrl)
     .then(() => console.log('Mongodb connected'))
     .catch((err) => console.log(err));
 

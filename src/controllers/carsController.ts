@@ -46,7 +46,7 @@ class CarController {
                 }
             });
 
-            return res.status(201).json({car})
+            return res.status(200).json({car})
         } catch {
             res.status(500).json({message: 'Something went wrong'});
         }
@@ -57,7 +57,7 @@ class CarController {
 
         try {
             const car = await Car.findByIdAndDelete(id);
-            return res.status(204);
+            return res.status(204).end();
         } catch(err) {
             return res.status(500).json("Something went wrong!")
         }

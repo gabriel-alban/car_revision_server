@@ -5,6 +5,10 @@ import mongoose from 'mongoose';
 import {json, urlencoded} from 'body-parser';
 import morgan from 'morgan';
 import path from 'node:path';
+import { fileURLToPath } from "node:url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 env.config();

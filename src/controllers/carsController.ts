@@ -6,9 +6,9 @@ class CarController {
         try {
             const cars = await Car.find({});
 
-            return res.status(200).json({items: cars});
-        } catch(err) {
-            return res.status(500).json({message:'Something went wrong!'})
+            return res.status(200).json({ items: cars });
+        } catch (err) {
+            return res.status(500).json({ message: 'Something went wrong!' })
         }
     }
 
@@ -17,48 +17,51 @@ class CarController {
             const car = new Car(req.body);
             await car.save();
 
-            return res.status(201).json({car});
+            return res.status(201).json({ car });
         } catch (err) {
-            return res.status(500).json({message: 'Something went wrong!'})
+            return res.status(500).json({ message: 'Something went wrong!' })
         }
     }
 
     async getCar(req: Request, res: Response) {
-        const {id} = req.params;
+        const { id } = req.params;
         try {
             const car = await Car.findById(id);
-            if (!car) return res.status(404).json({message: 'Car not found.'});
+            if (!car) return res.status(404).json({ message: 'Car not found.' });
 
-            return res.status(200).json({car});
-        } catch(err) {
-            return res.status(500).json({message: err instanceof Error ? err.message : 'Something went wrong!'})
+            return res.status(200).json({ car });
+        } catch (err) {
+            return res.status(500).json({ message: err instanceof Error ? err.message : 'Something went wrong!' })
         }
     }
 
     async updateCarInformation(req: Request, res: Response) {
-        const {id} = req.params;
-        const {brand, model, km_range} = req.body;
+        const { id } = req.params;
+        const { brand, model, km_range } = req.body;
 
         try {
-            const car = await Car.findByIdAndUpdate(id, {
-                $set: {
-                    brand, model, km_range
-                }
-            });
+            const car = await Car.findByIdAndUpdate(id,
+                { $set: { brand, model, km_range } },
+                { new: true, runValidators: true }
+            );
 
-            return res.status(200).json({car})
+            if (!car) {
+                return res.status(404).json({ message: "Car not found!" });
+            }
+
+            return res.status(200).json({ car })
         } catch {
-            res.status(500).json({message: 'Something went wrong'});
+            res.status(500).json({ message: 'Something went wrong' });
         }
     }
 
     async deleteCarInformation(req: Request, res: Response) {
-        const {id} = req.params;
+        const { id } = req.params;
 
         try {
             const car = await Car.findByIdAndDelete(id);
             return res.status(204).end();
-        } catch(err) {
+        } catch (err) {
             return res.status(500).json("Something went wrong!")
         }
     }

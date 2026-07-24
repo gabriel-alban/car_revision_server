@@ -22,3 +22,17 @@ export const carIdParamSchema = z.object({
 	query: z.object({}).optional()
 });
 
+export const updateCarSchema = z.object({
+    params: z.object({
+        id: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid car id")
+    }),
+    body: z.object({
+        brand: z.string().trim().min(1, "Brand is required"),
+        model: z.string().trim().min(1, "Model is required"),
+        km_range: z
+            .number({ error: "km_range must be a number" })
+            .nonnegative("km_range must be 0 or greater")
+    }),
+    query: z.object({}).optional()
+});
+

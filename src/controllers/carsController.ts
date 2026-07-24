@@ -26,7 +26,7 @@ class CarController {
     async getCar(req: Request, res: Response) {
         const {id} = req.params;
         try {
-            const car = await Car.findOne({where: {id}});
+            const car = await Car.findById(id);
             if (!car) return res.status(404).json({message: 'Car not found.'});
 
             return res.status(200).json({car});

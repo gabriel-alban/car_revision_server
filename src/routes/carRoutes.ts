@@ -6,8 +6,8 @@ import { createCarSchema, carIdParamSchema, updateCarSchema } from "../validatio
 const router = Router();
 
 router.get('/', CarController.getAllCars)
-router.post('/', validate(createCarSchema) ,CarController.storeCar);
-router.get('/:id', validate(carIdParamSchema) ,CarController.getCar);
+router.post('/', validate(createCarSchema), CarController.storeCar);
+router.get('/:id', validate(carIdParamSchema), CarController.getCar);
 router.delete('/:id', validate(carIdParamSchema), CarController.deleteCarInformation);
 router.put('/:id',validate(updateCarSchema), CarController.updateCarInformation);
 

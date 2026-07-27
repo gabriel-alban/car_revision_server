@@ -1,6 +1,7 @@
 import express from 'express';
 import env from 'dotenv';
 import carRouter from './routes/carRoutes.js';
+import revisionRouter from './routes/revisionRoutes.js';
 import mongoose from 'mongoose';
 import {json, urlencoded} from 'body-parser';
 import morgan from 'morgan';
@@ -31,6 +32,7 @@ mongoose.connect(mongoUrl)
     .catch((err) => console.log(err));
 
 app.use("/api/cars", carRouter);
+app.use("/api/cars/:carId/revisions", revisionRouter)
 
 app.listen(port, () => {
     console.log(`Server started at port ${port}`);

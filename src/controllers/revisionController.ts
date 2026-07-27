@@ -1,0 +1,48 @@
+import { Request, Response } from 'express';
+import { Revision } from '../models/revisionModel.js';
+
+class RevisionController {
+    async getRevisions(req: Request, res: Response) {
+        const { carId } = req.params;
+
+        if (!carId) return res.status(400).json({error: 'No car was selected'});
+        
+        try {
+            const revisions = await Revision.find({car: carId}).sort({date: 1});
+            return res.status(200).json(revisions);
+        } catch(err) {
+            return res.status(500).json({error: 'Something went wrong!'});
+        }
+    }
+
+    async storeRevision(req: Request, res: Response) {
+        const { carId } = req.params;
+
+        if (!carId) return res.status(400).json({error: "No car selected."});
+
+        try {
+            const revision = new Revision(req.body);
+            await revision.save();
+
+            return res.status(201).json({revision, message: 'Success!'});
+        } catch(err) {
+            return res.status(500).json({error: 'Something went wrong!'})
+        }
+    }
+
+    async deleteRevision(req: Request, res: Response) {
+        const {carId, id} = req.params;
+
+        if (!carId) return res.status(400).json({error: "No car selected."});
+        if (!id) return res.status(400).json({error: 'No revision selected.'});
+
+        try {
+            await Revision.findByIdAndDelete(id);
+            return res.status(200).json({message: 'Success'});
+        } catch(err) {
+            return res.status(500).json({error: 'Something went wrong!'});
+        }
+    }
+}
+
+export default new RevisionController();

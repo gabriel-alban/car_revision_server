@@ -5,7 +5,12 @@ import hash from "../helpers/hash.js";
 class AuthController {
     async me(req: Request, res: Response) {
         try {
+            const userId = req.user?._id;
+            if(!userId) return res.status(401).json({error: 'Access denied'});
+
             const user = User.findById(req.body._id).select("-password");
+            if(!user) return res.status(404).json({error: 'User not found!'});
+
             return res.status(200).json(user);
         } catch(err) {
             return res.status(500).json({error: 'Something went wrong!'})
@@ -23,8 +28,10 @@ class AuthController {
             await user.save();
 
             const token = user.generateToken();
+            const safeUser = user.toObject();
+            delete (safeUser as any).password;
 
-            return res.header('X-AUTH-TOKEN', token).status(201).json(user);
+            return res.header('X-AUTH-TOKEN', token).status(201).json(safeUser);
         } catch(err) {
             return res.status(500).json({error: 'Something went wrong'});
         }

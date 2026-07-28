@@ -9,7 +9,7 @@ class AuthController {
             const userId = req.user?._id;
             if (!userId) return res.status(401).json({ error: 'Access denied' });
 
-            const user = User.findById(req.body._id).select("-password");
+            const user = User.findById(userId).select("-password");
             if (!user) return res.status(404).json({ error: 'User not found!' });
 
             return res.status(200).json(user);

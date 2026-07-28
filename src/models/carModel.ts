@@ -12,6 +12,10 @@ const carSchema = new mongoose.Schema({
     km_range: {
         required: true,
         type: Number
+    },
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
     }
 });
 

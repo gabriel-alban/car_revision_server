@@ -9,3 +9,12 @@ export const registerSchema = z.object({
     params: z.object({}).optional(),
     query: z.object({}).optional()
 });
+
+export const loginSchema = z.object({
+    body: z.object({
+        email: z.string().trim().min(10, "Email is required"),
+        password: z.string().trim().min(10, "Password is required")
+    }),
+    params: z.object({}).optional(),
+    query: z.object({}).optional()
+})

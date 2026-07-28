@@ -2,9 +2,10 @@ import { Car } from "../models/carModel.js";
 import { Request, Response } from "express";
 
 class CarController {
-    async getAllCars(_req: Request, res: Response) {
+    async getAllCars(req: Request, res: Response) {
         try {
-            const cars = await Car.find({});
+            const userId = req.user?._id
+            const cars = await Car.find({user: userId});
 
             return res.status(200).json({ items: cars });
         } catch (err) {

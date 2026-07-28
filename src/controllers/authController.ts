@@ -1,29 +1,30 @@
 import { Request, Response } from "express";
 import { User } from "../models/userModel.js";
 import hash from "../helpers/hash.js";
+import jwt from 'jsonwebtoken';
 
 class AuthController {
     async me(req: Request, res: Response) {
         try {
             const userId = req.user?._id;
-            if(!userId) return res.status(401).json({error: 'Access denied'});
+            if (!userId) return res.status(401).json({ error: 'Access denied' });
 
             const user = User.findById(req.body._id).select("-password");
-            if(!user) return res.status(404).json({error: 'User not found!'});
+            if (!user) return res.status(404).json({ error: 'User not found!' });
 
             return res.status(200).json(user);
-        } catch(err) {
-            return res.status(500).json({error: 'Something went wrong!'})
+        } catch (err) {
+            return res.status(500).json({ error: 'Something went wrong!' })
         }
     }
 
     async register(req: Request, res: Response) {
         try {
-            let user = await User.findOne({email: req.body.email});
-            if(user) return res.status(409).json({error: 'User already registered!'})
-            
+            let user = await User.findOne({ email: req.body.email });
+            if (user) return res.status(409).json({ error: 'User already registered!' })
+
             const password = await hash.encrypt(req.body.password);
-            user = new User({...req.body, password: password});
+            user = new User({ ...req.body, password: password });
 
             await user.save();
 
@@ -32,25 +33,55 @@ class AuthController {
             delete (safeUser as any).password;
 
             return res.header('X-AUTH-TOKEN', token).status(201).json(safeUser);
-        } catch(err) {
-            return res.status(500).json({error: 'Something went wrong'});
+        } catch (err) {
+            return res.status(500).json({ error: 'Something went wrong' });
         }
     }
 
     async login(req: Request, res: Response) {
         try {
-            let user = await User.findOne({email: req.body.email});
+            let user = await User.findOne({ email: req.body.email });
 
-            if(!user) return res.status(400).json({error: 'Invalid Email'});
+            if (!user) return res.status(400).json({ error: 'Invalid Email' });
 
             const validPass = await hash.compare(req.body.password, user.password);
 
-            if(!validPass) return res.status(400).json({error: 'Invalid Password'});
+            if (!validPass) return res.status(400).json({ error: 'Invalid Password' });
 
             const token = user.generateToken();
+            const refreshToken = user.generateRefreshToken();
+            const safeUser = user.toObject();
+            delete (safeUser as any).password;
 
-            return res.header('X-AUTH-TOKEN', token).status(200).json(user);
-        } catch(err) {
+            return res.header('X-AUTH-TOKEN', token).status(200).json({ user: safeUser, token, refreshToken });
+        } catch (err) {
+            return res.status(500).json({ error: 'Something went wrong' });
+        }
+    }
+
+    async refresh(req: Request, res: Response) {
+        try {
+            const refreshToken = req.header('X-REFRESH-TOKEN') || req.body.refreshToken;
+            if (!refreshToken) return res.status(401).json({ error: 'Refresh token is missing' });
+
+            const secret = process.env.JWT_REFRESH_SECRET_KEY;
+            if (!secret) return res.status(500).json({ error: 'Refresh secret key is missing' });
+
+            let decoded;
+
+            try {
+                decoded = jwt.verify(refreshToken, secret);
+            } catch (e) {
+                return res.status(401).json({ error: 'Invalid or expired refresh token' });
+            }
+
+            const user = await User.findById((decoded as { _id: string })._id);
+            if (!user) return res.status(401).json({ error: 'User not found' });
+
+            const token = user.generateToken();
+            const newRefreshToken = user.generateRefreshToken();   // optional: rotate the refresh token
+            return res.header('X-AUTH-TOKEN', token).status(200).json({ token, refreshToken: newRefreshToken });
+        } catch (err) {
             return res.status(500).json({error: 'Something went wrong'});
         }
     }

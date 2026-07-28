@@ -10,11 +10,11 @@ export const validate = (schema: z.ZodTypeAny) =>
                 query: req.query
             });
             next();
-        } catch(err) {
+        } catch (err) {
             if (err instanceof ZodError) {
-                return res.status(400).json({errors: err.issues})
+                return res.status(400).json({ errors: err.issues.map((e) => `Invalid input for ${e.path.join(',')}`) });
             }
 
-            return res.status(500).json({message: 'Validation Failed'});
+            return res.status(500).json({ message: 'Validation Failed' });
         }
     }

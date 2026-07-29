@@ -1,0 +1,26 @@
+version: '3.8'
+services:
+  api:
+    container_name: node_api
+    restart: on-failure
+    build: .
+    env_file:
+      - .env
+    depends_on:
+      - db
+    volumes:
+      - ./src:/app/src
+    ports:
+      - "4000:4000"
+    command: >
+      sh -c "npm run dev"
+  db:
+    container_name: mongo_db
+    image: mongo:latest
+    restart: always
+    volumes:
+      - ./data:/data/db
+    environment:
+      - MONGO_INITDB_DATABASE=car_revision
+    ports:
+      - "27018:27017"

@@ -3,7 +3,7 @@ import { Revision } from '../models/revisionModel.js';
 import { Car } from '../models/carModel.js';
 
 class RevisionController {
-    async getRevisions(req: Request, res: Response) {
+    async getRevisions(req: Request, res: Response): Promise<Response> {
         const { carId } = req.params;
 
         if (!carId) return res.status(400).json({error: 'No car was selected'});
@@ -16,7 +16,7 @@ class RevisionController {
         }
     }
 
-    async storeRevision(req: Request, res: Response) {
+    async storeRevision(req: Request, res: Response): Promise<Response> {
         const { carId } = req.params;
 
         if (!carId) return res.status(400).json({error: "No car selected."});
@@ -36,7 +36,7 @@ class RevisionController {
         }
     }
 
-    async deleteRevision(req: Request, res: Response) {
+    async deleteRevision(req: Request, res: Response): Promise<Response> {
         const {carId, id} = req.params;
 
         if (!carId) return res.status(400).json({error: "No car selected."});

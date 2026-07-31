@@ -12,9 +12,9 @@ class CarController {
         return userId;
     }
 
-    async getAllCars(req: Request, res: Response) {
+    async getAllCars(req: Request, res: Response): Promise<Response> {
         const userId = this.getUserId(req, res);
-        if (!userId) return;
+        if (!userId) return res.status(400).json({error: 'No userId provided!'});
         try {
             const cars = await Car.find({ user: userId });
 
@@ -24,9 +24,9 @@ class CarController {
         }
     }
 
-    async storeCar(req: Request, res: Response) {
+    async storeCar(req: Request, res: Response): Promise<Response> {
         const userId = this.getUserId(req, res);
-        if (!userId) return;
+        if (!userId) return res.status(400).json({error: 'No userId provided!'});
 
         try {
             const car = new Car({ ...req.body, user: userId });
@@ -38,9 +38,9 @@ class CarController {
         }
     }
 
-    async getCar(req: Request, res: Response) {
+    async getCar(req: Request, res: Response): Promise<Response> {
         const userId = this.getUserId(req, res);
-        if (!userId) return;
+        if (!userId) return res.status(400).json({error: 'No userId provided!'});
 
         const { id } = req.params;
 
@@ -54,9 +54,9 @@ class CarController {
         }
     }
 
-    async updateCarInformation(req: Request, res: Response) {
+    async updateCarInformation(req: Request, res: Response): Promise<Response> {
         const userId = this.getUserId(req, res);
-        if(!userId) return;
+        if(!userId) return res.status(400).json({error: 'No userId provided!'});
 
         const { id } = req.params;
         const { brand, model, km_range } = req.body;
@@ -74,13 +74,13 @@ class CarController {
 
             return res.status(200).json({ car })
         } catch {
-            res.status(500).json({ message: 'Something went wrong' });
+            return res.status(500).json({ message: 'Something went wrong' });
         }
     }
 
-    async deleteCarInformation(req: Request, res: Response) {
+    async deleteCarInformation(req: Request, res: Response): Promise<Response> {
         const userId = this.getUserId(req, res);
-        if(!userId) return;
+        if(!userId) return res.status(400).json({error: 'No userId provided!'});
 
         const { id } = req.params;
 

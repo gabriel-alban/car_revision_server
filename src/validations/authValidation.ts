@@ -11,19 +11,14 @@ const strongPasswordSchema = z
   .refine((value) => !/\s/.test(value), "Password must not contain spaces");
 
 export const registerSchema = z.object({
-    username: z
-      .string()
-      .trim()
-      .min(3, "Username must be at least 3 characters")
-      .max(50, "Username is too long"),
-    email: z
-      .string()
-      .trim()
-      .toLowerCase()
-      .email("Invalid email format")
-      .max(255, "Email is too long"),
+  body: z.object({
+    username: z.string().trim().min(3).max(50),
+    email: z.string().trim().toLowerCase().email().max(255),
     password: strongPasswordSchema
-  });
+  }),
+  params: z.object({}).optional(),
+  query: z.object({}).optional()
+});
 
 export const loginSchema = z.object({
   body: z.object({
@@ -31,7 +26,7 @@ export const loginSchema = z.object({
       .string()
       .trim()
       .toLowerCase()
-      .email("Invalid email format")
+      .email()
       .max(255, "Email is too long"),
     password: z
       .string()

@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { User } from "../models/userModel.js";
 import hash from "../helpers/hash.js";
 import jwt from 'jsonwebtoken';
+import { sendWelcomeEmail } from "../helpers/mailer.js";
 
 class AuthController {
     async me(req: Request, res: Response): Promise<Response> {
@@ -27,6 +28,13 @@ class AuthController {
             user = new User({ ...req.body, password: password });
 
             await user.save();
+
+            try {
+                await sendWelcomeEmail(user.email, user.username);
+            } catch (e) {
+                console.log(e);
+                throw new Error('Send mail failed!')
+            }
 
             const token = user.generateToken();
             const refreshToken = user.generateRefreshToken();

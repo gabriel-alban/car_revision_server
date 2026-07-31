@@ -29,16 +29,18 @@ class AuthController {
             await user.save();
 
             const token = user.generateToken();
+            const refreshToken = user.generateRefreshToken();
+
             const safeUser = user.toObject();
             delete (safeUser as any).password;
 
-            return res.header('X-AUTH-TOKEN', token).status(201).json(safeUser);
+            return res.status(201).json({ user: safeUser, token, refreshToken });
         } catch (err) {
             return res.status(500).json({ error: 'Something went wrong' });
         }
     }
 
-    async login(req: Request, res: Response): Promise<Response | void> {
+    async login(req: Request, res: Response): Promise<Response> {
         try {
             let user = await User.findOne({ email: req.body.email });
 
@@ -50,10 +52,8 @@ class AuthController {
 
             const token = user.generateToken();
             const refreshToken = user.generateRefreshToken();
-            const safeUser = user.toObject();
-            delete (safeUser as any).password;
 
-            return res.header('X-AUTH-TOKEN', token).status(200).json({ user: safeUser, token, refreshToken });
+            return res.status(200).json({ user: { username: user.username, email: user.email }, token, refreshToken });
         } catch (err) {
             return res.status(500).json({ error: 'Something went wrong' });
         }
@@ -61,13 +61,14 @@ class AuthController {
 
     async refresh(req: Request, res: Response): Promise<Response> {
         try {
-            const refreshToken = req.header('X-REFRESH-TOKEN') || req.body.refreshToken;
-            if (!refreshToken) return res.status(401).json({ error: 'Refresh token is missing' });
-
+            const refreshToken = req.body.refreshToken;
+            if (!refreshToken) {
+                return res.status(401).json({ error: 'Refresh token is missing' });
+            }
             const secret = process.env.JWT_REFRESH_SECRET_KEY;
             if (!secret) return res.status(500).json({ error: 'Refresh secret key is missing' });
 
-            let decoded;
+            let decoded: jwt.JwtPayload | string;
 
             try {
                 decoded = jwt.verify(refreshToken, secret);
@@ -75,12 +76,17 @@ class AuthController {
                 return res.status(401).json({ error: 'Invalid or expired refresh token' });
             }
 
-            const user = await User.findById((decoded as { _id: string })._id);
+            if (typeof decoded === 'string' || !decoded._id) {
+                return res.status(401).json({ error: 'Invalid refresh token payload!' })
+            }
+
+            const user = await User.findById(decoded._id);
             if (!user) return res.status(401).json({ error: 'User not found' });
 
             const token = user.generateToken();
-            const newRefreshToken = user.generateRefreshToken();   // optional: rotate the refresh token
-            return res.header('X-AUTH-TOKEN', token).status(200).json({ token, refreshToken: newRefreshToken });
+            const newRefreshToken = user.generateRefreshToken();
+
+            return res.status(200).json({ token, refreshToken: newRefreshToken });
         } catch (err) {
             return res.status(500).json({ error: 'Something went wrong' });
         }

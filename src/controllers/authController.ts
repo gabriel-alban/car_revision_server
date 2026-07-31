@@ -4,7 +4,7 @@ import hash from "../helpers/hash.js";
 import jwt from 'jsonwebtoken';
 
 class AuthController {
-    async me(req: Request, res: Response) {
+    async me(req: Request, res: Response): Promise<Response> {
         try {
             const userId = req.user?._id;
             if (!userId) return res.status(401).json({ error: 'Access denied' });
@@ -18,7 +18,7 @@ class AuthController {
         }
     }
 
-    async register(req: Request, res: Response) {
+    async register(req: Request, res: Response): Promise<Response> {
         try {
             let user = await User.findOne({ email: req.body.email });
             if (user) return res.status(409).json({ error: 'User already registered!' })
@@ -38,7 +38,7 @@ class AuthController {
         }
     }
 
-    async login(req: Request, res: Response) {
+    async login(req: Request, res: Response): Promise<Response | void> {
         try {
             let user = await User.findOne({ email: req.body.email });
 
@@ -59,7 +59,7 @@ class AuthController {
         }
     }
 
-    async refresh(req: Request, res: Response) {
+    async refresh(req: Request, res: Response): Promise<Response> {
         try {
             const refreshToken = req.header('X-REFRESH-TOKEN') || req.body.refreshToken;
             if (!refreshToken) return res.status(401).json({ error: 'Refresh token is missing' });
@@ -82,7 +82,7 @@ class AuthController {
             const newRefreshToken = user.generateRefreshToken();   // optional: rotate the refresh token
             return res.header('X-AUTH-TOKEN', token).status(200).json({ token, refreshToken: newRefreshToken });
         } catch (err) {
-            return res.status(500).json({error: 'Something went wrong'});
+            return res.status(500).json({ error: 'Something went wrong' });
         }
     }
 }

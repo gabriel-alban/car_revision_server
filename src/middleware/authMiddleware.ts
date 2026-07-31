@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
-export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
+export const authMiddleware = (req: Request, res: Response, next: NextFunction): Response | void => {
     const token = req.header('X-AUTH-TOKEN');
     const secret = process.env.JWT_SECRET_KEY;
     if (!secret) return res.status(500).json({ error: 'Secret key is missing' });

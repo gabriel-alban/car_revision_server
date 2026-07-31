@@ -8,6 +8,7 @@ import {json, urlencoded} from 'body-parser';
 import morgan from 'morgan';
 import path from 'node:path';
 import { fileURLToPath } from "node:url";
+import { startDailyRevisionCron } from './jobs/notification.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -29,7 +30,10 @@ if (!mongoUrl) {
 }
 
 mongoose.connect(mongoUrl)
-    .then(() => console.log('Mongodb connected'))
+    .then(() => {
+        console.log('Mongodb connected')
+        startDailyRevisionCron();
+    })
     .catch((err) => console.log(err));
 
 app.use("/api/auth", authRouter);

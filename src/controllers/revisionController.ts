@@ -18,19 +18,28 @@ class RevisionController {
 
     async storeRevision(req: Request, res: Response): Promise<Response> {
         const { carId } = req.params;
-
+        console.log('carId', carId);
+        
         if (!carId) return res.status(400).json({error: "No car selected."});
 
         try {
             const revision = new Revision({...req.body, car: carId});
             await revision.save();
             
-            await Car.updateOne(
+            const updateResult = await Car.updateOne(
                 {_id: carId},
                 {$max: { km_range: revision.current_km_number}}
-            )
+            );
+            
+            if (updateResult.matchedCount === 0) {
+            return res.status(404).json({ error: "Car not found for this carId" });
+            }
 
-            return res.status(201).json({revision, message: 'Success!'});
+            return res.status(201).json({
+                revision,
+                message: "Success!",
+                kmRangeUpdated: updateResult.modifiedCount > 0
+            });
         } catch(err) {
             return res.status(500).json({error: 'Something went wrong!'})
         }

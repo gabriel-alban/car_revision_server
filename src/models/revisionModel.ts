@@ -20,6 +20,10 @@ const revisionSchema = new mongoose.Schema({
         required: [true, "Date is required"],
         default: Date.now,
     },
+    sendAlert: {
+        type: Boolean,
+        default: true,
+    },
     car: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Car'

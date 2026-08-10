@@ -2,6 +2,7 @@ import cron from 'node-cron';
 
 import { Revision } from '../models/revisionModel.js';
 import { transporter } from '../helpers/mailer.js';
+import { RevisionType } from '../types/revision.js';
 
 const ONE_YEAR_MS = 365 * 24 * 60 * 60 * 1000;
 
@@ -14,7 +15,7 @@ const runDailyRevisionCheck = async () => {
     carRevisions.forEach(async (rev) => {
         const user = (rev.car as any).user;
 
-        if (now > new Date(rev.date).getTime() + ONE_YEAR_MS) {
+        if (now > new Date(rev.date).getTime() + ONE_YEAR_MS && rev.revision_type === RevisionType.CONSUMABLE) {
             await transporter.sendMail({
                 from: process.env.MAIL_FROM,
                 to: user.email,

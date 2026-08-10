@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { RevisionType } from "../types/revision.js";
 
 const revisionSchema = new mongoose.Schema({
     revision_title: {
@@ -14,6 +15,12 @@ const revisionSchema = new mongoose.Schema({
     },
     next_km_number: {
         type: Number,
+    },
+    revision_type: {
+        type: String,
+        enum: Object.values(RevisionType),
+        trim: true,
+        default: RevisionType.CONSUMABLE
     },
     date: {
         type: Date,

@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { lowercase } from "zod";
+import { RevisionType } from "../types/revision.js";
 
 const revisionSchema = new mongoose.Schema({
     revision_title: {
@@ -18,11 +19,11 @@ const revisionSchema = new mongoose.Schema({
     },
     revision_type: {
         type: String,
-        enum: ['consumable', 'replacement'],
+        enum: RevisionType,
         required: true,
         trim: true,
         lowercase: true,
-        default: 'consumable'
+        default: RevisionType.CONSUMABLE
     },
     date: {
         type: Date,

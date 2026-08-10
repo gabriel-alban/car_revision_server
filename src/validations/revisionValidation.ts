@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { RevisionType } from '../types/revision.js';
 
 export const createRevisionSchema = z.object({
     body: z.object({
@@ -10,7 +11,7 @@ export const createRevisionSchema = z.object({
             })
             .nonnegative("km_range must be 0 or greater"),
         next_km_number: z.number({ error: "Next revision km number" }).nonnegative("Next km number should be greater that 0").optional(),
-        revision_type: z.enum(['consumable', 'replacement']),
+        revision_type: z.enum(Object.values(RevisionType)),
         date: z.coerce.date().optional(),
         sendAlert: z.boolean().default(true),
         car: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid car")

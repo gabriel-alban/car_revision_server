@@ -14,7 +14,7 @@ const runDailyRevisionCheck = async () => {
     carRevisions.forEach(async (rev) => {
         const user = (rev.car as any).user;
 
-        if (now > new Date(rev.date).getTime() + ONE_YEAR_MS) {
+        if (now > new Date(rev.date).getTime() + ONE_YEAR_MS && rev.revision_type === 'consumable') {
             await transporter.sendMail({
                 from: process.env.MAIL_FROM,
                 to: user.email,

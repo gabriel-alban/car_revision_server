@@ -19,7 +19,7 @@ const revisionSchema = new mongoose.Schema({
     },
     revision_type: {
         type: String,
-        enum: RevisionType,
+        enum: Object.values(RevisionType),
         required: true,
         trim: true,
         lowercase: true,

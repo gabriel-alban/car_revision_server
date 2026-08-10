@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import { lowercase } from "zod";
 import { RevisionType } from "../types/revision.js";
 
 const revisionSchema = new mongoose.Schema({

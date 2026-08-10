@@ -1,8 +1,7 @@
 import cron from 'node-cron';
 
 import { Revision } from '../models/revisionModel.js';
-import { Car } from '../models/carModel.js';
-import { sendWelcomeEmail, transporter } from '../helpers/mailer.js';
+import { transporter } from '../helpers/mailer.js';
 
 const ONE_YEAR_MS = 365 * 24 * 60 * 60 * 1000;
 

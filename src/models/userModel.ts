@@ -13,7 +13,6 @@ interface IUserMethods {
 }
 
 type UserModel = Model<IUser, {}, IUserMethods>
-type UserDocument = HydratedDocument<IUser, IUserMethods>
 
 export const userSchema = new mongoose.Schema<IUser, UserModel, IUserMethods>({
     username: {

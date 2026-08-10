@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { lowercase } from "zod";
 
 const revisionSchema = new mongoose.Schema({
     revision_title: {
@@ -14,6 +15,14 @@ const revisionSchema = new mongoose.Schema({
     },
     next_km_number: {
         type: Number,
+    },
+    revision_type: {
+        type: String,
+        enum: ['consumable', 'replacement'],
+        required: true,
+        trim: true,
+        lowercase: true,
+        default: 'consumable'
     },
     date: {
         type: Date,

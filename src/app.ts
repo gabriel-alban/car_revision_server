@@ -2,6 +2,7 @@ import express from 'express';
 import env from 'dotenv';
 import authRouter from './routes/authRouter.js'
 import carRouter from './routes/carRoutes.js';
+import usersRouter from './routes/usersRoutes.js';
 import revisionRouter from './routes/revisionRoutes.js';
 import mongoose from 'mongoose';
 import {json, urlencoded} from 'body-parser';
@@ -38,6 +39,7 @@ mongoose.connect(mongoUrl)
 
 app.use("/api/auth", authRouter);
 app.use("/api/cars", carRouter);
+app.use("/api/users", usersRouter);
 app.use("/api/cars/:carId/revisions", revisionRouter)
 
 app.listen(port, () => {

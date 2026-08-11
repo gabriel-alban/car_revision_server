@@ -6,7 +6,7 @@ import { RevisionType } from '../types/revision.js';
 
 const ONE_YEAR_MS = 365 * 24 * 60 * 60 * 1000;
 
-const runDailyRevisionCheck = async () => {
+const runDailyRevisionCheck = async (): Promise<void> => {
     const revisions = await Revision.find({ car: { $exists: true, $ne: null } }).populate({ path: "car", populate: { path: "user", select: "_id username email" } }).lean();
     const carRevisions = revisions.filter((rev) => rev.car && (rev.car as any).user !== null);
    

@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
-import { RevisionType } from "../types/revision.js";
+import { IRevision, RevisionType } from "../types/revision.js";
 
-const revisionSchema = new mongoose.Schema({
+const revisionSchema = new mongoose.Schema<IRevision>({
     revision_title: {
         type: String,
         required: [true, "Revision title is required"],

@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
+import { ICar } from "../types/car.js";
 
-const carSchema = new mongoose.Schema({
+const carSchema = new mongoose.Schema<ICar>({
     brand: {
         required: true,
         type: String,

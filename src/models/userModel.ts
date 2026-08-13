@@ -1,4 +1,4 @@
-import mongoose, {Model, HydratedDocument} from "mongoose";
+import mongoose, { Model } from "mongoose";
 import jwt from 'jsonwebtoken';
 
 export interface IUser {

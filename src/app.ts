@@ -1,5 +1,6 @@
 import express from 'express';
 import env from 'dotenv';
+import cors from 'cors';
 import authRouter from './routes/authRouter.js'
 import carRouter from './routes/carRoutes.js';
 import usersRouter from './routes/usersRoutes.js';
@@ -23,6 +24,10 @@ app.use(json());
 app.use(urlencoded({extended: true}));
 app.use(express.static(path.join(__dirname, "../")));
 app.use(morgan('short'));
+app.use(cors({
+    origin: 'http://localhost:3000',
+    credentials: true
+}))
 
 const mongoUrl = process.env.MONGO_URL;
 

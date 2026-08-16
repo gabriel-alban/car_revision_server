@@ -11,6 +11,7 @@ import morgan from 'morgan';
 import path from 'node:path';
 import { fileURLToPath } from "node:url";
 import { startDailyRevisionCron } from './jobs/notification.js';
+import { error as errorLogger } from './middleware/errorLogger.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -45,7 +46,9 @@ mongoose.connect(mongoUrl)
 app.use("/api/auth", authRouter);
 app.use("/api/cars", carRouter);
 app.use("/api/users", usersRouter);
-app.use("/api/cars/:carId/revisions", revisionRouter)
+app.use("/api/cars/:carId/revisions", revisionRouter);
+
+app.use(errorLogger);
 
 app.listen(port, () => {
     console.log(`Server started at port ${port}`);

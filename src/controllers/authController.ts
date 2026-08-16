@@ -1,11 +1,11 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { User } from "../models/userModel.js";
 import hash from "../helpers/hash.js";
 import jwt from 'jsonwebtoken';
 import { sendWelcomeEmail } from "../helpers/mailer.js";
 
 class AuthController {
-    async me(req: Request, res: Response): Promise<Response> {
+    async me(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         try {
             const userId = req.user?._id;
             if (!userId) return res.status(401).json({ error: 'Access denied' });
@@ -15,11 +15,11 @@ class AuthController {
 
             return res.status(200).json(user);
         } catch (err) {
-            return res.status(500).json({ error: 'Something went wrong!' })
+            next(err);
         }
     }
 
-    async register(req: Request, res: Response): Promise<Response> {
+    async register(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         try {
             let user = await User.findOne({ email: req.body.email });
             if (user) return res.status(409).json({ error: 'User already registered!' })
@@ -44,11 +44,11 @@ class AuthController {
 
             return res.status(201).json({ user: safeUser, token, refreshToken });
         } catch (err) {
-            return res.status(500).json({ error: 'Something went wrong' });
+            next(err);
         }
     }
 
-    async login(req: Request, res: Response): Promise<Response> {
+    async login(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         try {
             let user = await User.findOne({ email: req.body.email });
 
@@ -63,11 +63,11 @@ class AuthController {
 
             return res.status(200).json({ user: { username: user.username, email: user.email }, token, refreshToken });
         } catch (err) {
-            return res.status(500).json({ error: 'Something went wrong' });
+            next(err);
         }
     }
 
-    async refresh(req: Request, res: Response): Promise<Response> {
+    async refresh(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         try {
             const refreshToken = req.body.refreshToken;
             if (!refreshToken) {
@@ -96,7 +96,7 @@ class AuthController {
 
             return res.status(200).json({ token, refreshToken: newRefreshToken });
         } catch (err) {
-            return res.status(500).json({ error: 'Something went wrong' });
+            next(err);
         }
     }
 }

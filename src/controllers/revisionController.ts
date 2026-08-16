@@ -1,9 +1,9 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { Revision } from '../models/revisionModel.js';
 import { Car } from '../models/carModel.js';
 
 class RevisionController {
-    async getRevisions(req: Request, res: Response): Promise<Response> {
+    async getRevisions(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         const { carId } = req.params;
 
         if (!carId) return res.status(400).json({error: 'No car was selected'});
@@ -12,11 +12,11 @@ class RevisionController {
             const revisions = await Revision.find({car: carId}).sort({date: 1});
             return res.status(200).json(revisions);
         } catch(err) {
-            return res.status(500).json({error: 'Something went wrong!'});
+            next(err);
         }
     }
 
-    async storeRevision(req: Request, res: Response): Promise<Response> {
+    async storeRevision(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         const { carId } = req.params;
         console.log('carId', carId);
         
@@ -41,11 +41,11 @@ class RevisionController {
                 kmRangeUpdated: updateResult.modifiedCount > 0
             });
         } catch(err) {
-            return res.status(500).json({error: 'Something went wrong!'})
+            next(err);
         }
     }
 
-    async deleteRevision(req: Request, res: Response): Promise<Response> {
+    async deleteRevision(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         const {carId, id} = req.params;
 
         if (!carId) return res.status(400).json({error: "No car selected."});
@@ -55,7 +55,7 @@ class RevisionController {
             await Revision.findOneAndDelete({_id: id, car: carId});
             return res.status(200).json({message: 'Success'});
         } catch(err) {
-            return res.status(500).json({error: 'Something went wrong!'});
+            next(err);
         }
     }
 }

@@ -1,5 +1,5 @@
 import { Car } from "../models/carModel.js";
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 
 class CarController {
     private getUserId(req: Request, res: Response): string | undefined {
@@ -12,7 +12,7 @@ class CarController {
         return userId;
     }
 
-    async getAllCars(req: Request, res: Response): Promise<Response> {
+    async getAllCars(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         const userId = this.getUserId(req, res);
         if (!userId) return res.status(400).json({error: 'No userId provided!'});
         try {
@@ -20,11 +20,11 @@ class CarController {
 
             return res.status(200).json({ items: cars });
         } catch (err) {
-            return res.status(500).json({ message: 'Something went wrong!' })
+            next(err);
         }
     }
 
-    async storeCar(req: Request, res: Response): Promise<Response> {
+    async storeCar(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         const userId = this.getUserId(req, res);
         if (!userId) return res.status(400).json({error: 'No userId provided!'});
 
@@ -34,11 +34,11 @@ class CarController {
 
             return res.status(201).json({ car });
         } catch (err) {
-            return res.status(500).json({ message: 'Something went wrong!' })
+            next(err);
         }
     }
 
-    async getCar(req: Request, res: Response): Promise<Response> {
+    async getCar(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         const userId = this.getUserId(req, res);
         if (!userId) return res.status(400).json({error: 'No userId provided!'});
 
@@ -50,11 +50,11 @@ class CarController {
 
             return res.status(200).json({ car });
         } catch (err) {
-            return res.status(500).json({ message: err instanceof Error ? err.message : 'Something went wrong!' })
+            next(err);
         }
     }
 
-    async updateCarInformation(req: Request, res: Response): Promise<Response> {
+    async updateCarInformation(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         const userId = this.getUserId(req, res);
         if(!userId) return res.status(400).json({error: 'No userId provided!'});
 
@@ -73,12 +73,12 @@ class CarController {
             }
 
             return res.status(200).json({ car })
-        } catch {
-            return res.status(500).json({ message: 'Something went wrong' });
+        } catch (err) {
+            next(err);
         }
     }
 
-    async deleteCarInformation(req: Request, res: Response): Promise<Response> {
+    async deleteCarInformation(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
         const userId = this.getUserId(req, res);
         if(!userId) return res.status(400).json({error: 'No userId provided!'});
 
@@ -90,7 +90,7 @@ class CarController {
 
             return res.status(200).json({message: 'Car erased'});
         } catch (err) {
-            return res.status(500).json("Something went wrong!")
+            next(err);
         }
     }
 }

@@ -40,7 +40,8 @@ userSchema.methods.generateToken = function() {
     const secret = process.env.JWT_SECRET_KEY;
     if (!secret) throw new Error('Secret key is missing!');
     const expiresIn = process.env.ACCESS_TOKEN_TTL || '15m';
-    return jwt.sign({_id: this._id, username: this.username}, secret, {expiresIn} as jwt.SignOptions);
+    const expiresAt = new Date(Date.now() + 15 * 60 * 1000).toISOString();
+    return jwt.sign({_id: this._id, username: this.username, expiresAt}, secret, {expiresIn} as jwt.SignOptions);
 }
 
 userSchema.methods.generateRefreshToken = function() {

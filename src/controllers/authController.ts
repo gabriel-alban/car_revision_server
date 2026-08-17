@@ -58,13 +58,10 @@ class AuthController {
 
             if (!validPass) return res.status(400).json({ error: 'Invalid Password' });
 
-            const expiresIn = 15 * 60 * 1000;
-            const expiresAt = new Date(Date.now() + expiresIn).toISOString();
-
             const token = user.generateToken();
             const refreshToken = user.generateRefreshToken();
 
-            return res.status(200).json({ user: { username: user.username, email: user.email }, token, refreshToken, expiresAt });
+            return res.status(200).json({ user: { username: user.username, email: user.email }, token, refreshToken });
         } catch (err) {
             next(err);
         }

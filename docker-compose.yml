@@ -19,8 +19,11 @@ services:
     image: mongo:latest
     restart: always
     volumes:
-      - ./data:/data/db
+      - mongo_data:/data/db
     environment:
       - MONGO_INITDB_DATABASE=car_revision
     ports:
       - "27018:27017"
+
+volumes:
+  mongo_data:
